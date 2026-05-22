@@ -3,10 +3,10 @@
 
 #include <Servo.h> 
 
-int pos = 0;
+
 int potenciometro = A4;
-int bM = A0;
-int bA = A1;
+int bM = 3;
+int bA = 2;
 int A = 4;
 int B = 5;
 int C = 6;
@@ -14,12 +14,12 @@ int D = 7;
 int E = 8;
 int F = 9;
 int G = 10;
-int rojo = 11;
+int rojo = 13;
 int azul = 12;
-int verde = A5;
+int verde = 11;
 int Buzzer = A3;
-int Estado = 0, BAS, BMS, fc, pot, temp,VER;
-int ultimoEstadoBoton = LOW;
+int Estado = 0,EstadoA, BAS, BMS, fc, pot, temp,VER;
+
 Servo servo_9;
 
 void setup(){
@@ -42,11 +42,13 @@ void setup(){
   pinMode(verde, OUTPUT);
   pinMode(Buzzer, OUTPUT);
  
+  EstadoA = 0;
 }
 
 void loop()
 {
   pot = analogRead(potenciometro);
+ 
   int angulo = map(pot, 0, 1023, 0, 180);
   int BM = digitalRead(bM);
   delay(15);
@@ -70,21 +72,18 @@ void loop()
   }
   if(BAS == 1 && BA == LOW){
     if(Estado == 2){
-    	digitalWrite(Buzzer, LOW);
+    	EstadoA = 1;
     }
     BAS = 0;
   }
-  VER = map(pot, 0, 1023, 0, 255);
-  analogWrite(verde, VER);
-  Serial.println(VER);
   switch(Estado){
   	case 0:
     	
     	mostrarCero();
     	servo_9.write(0);
-    	digitalWrite(rojo, LOW);
-    	digitalWrite(azul, LOW);
-    	digitalWrite(verde, LOW);
+    	digitalWrite(rojo, 0);
+    	digitalWrite(azul, 0);
+    	digitalWrite(verde, 0);
     	break;
   	case 1:
     	mostrarUno();
@@ -94,29 +93,50 @@ void loop()
     	break;
   	case 2:
     	mostrarDos();
-    	servo_9.write(180);
+    	
     	temp = map(pot, 0, 1023, 15, 40);
+    	Serial.println(EstadoA);
         if(temp < 35){
-        	digitalWrite(rojo, HIGH);
-            digitalWrite(azul, HIGH);
-            digitalWrite(verde, LOW);
+          	servo_9.write(0);
+        	  analogWrite(rojo, 255);
+            analogWrite(azul, 255);
+            analogWrite(verde, 0);
+            if(EstadoA == 1){
+              digitalWrite(Buzzer, LOW);
+            }else{
+              digitalWrite(Buzzer, HIGH);
+            }
         }else if(35 <= temp && temp < 37){
-        	digitalWrite(rojo, LOW);
-            digitalWrite(azul, HIGH);
-            digitalWrite(verde, HIGH);
+          	servo_9.write(45);
+        	  analogWrite(rojo, 0);
+            analogWrite(azul, 255);
+            analogWrite(verde, 255);
+    	      digitalWrite(Buzzer, LOW);   
+            EstadoA = 0;
         }else if(37 <= temp && temp < 38){
-        	digitalWrite(rojo, HIGH);
-            digitalWrite(azul, LOW);
-            digitalWrite(verde, HIGH);
+          	servo_9.write(90);
+        	  analogWrite(rojo, 255);
+            analogWrite(azul, 0);
+            analogWrite(verde, 255);
+    	      digitalWrite(Buzzer, LOW);   
+            EstadoA = 0;
         }else if(38 <= temp && temp <= 39){
-        	digitalWrite(rojo, LOW);
-            digitalWrite(azul, LOW);
-            
-          	Serial.println(VER);
+          	servo_9.write(135);
+            analogWrite(rojo, 255);
+            analogWrite(azul, 0);
+            analogWrite(verde, 165);
+    	      digitalWrite(Buzzer, LOW); 
+            EstadoA = 0; 
         }else{
-        	digitalWrite(rojo, HIGH);
-            digitalWrite(azul, HIGH);
-            digitalWrite(verde, HIGH);
+            servo_9.write(180);
+        	  analogWrite(rojo, 255);
+            analogWrite(azul, 255);
+            analogWrite(verde, 255);
+            if(EstadoA == 1){
+              digitalWrite(Buzzer, LOW);
+            }else{
+              digitalWrite(Buzzer, HIGH);
+            }
         }  
     	break;
   }
@@ -157,26 +177,30 @@ void mostrarDos() {
 //Modo 1: Monitor de frecuencia cardíaca.
 void frecuenciaC(int fC){
   if(fC < 60){
-    digitalWrite(rojo, HIGH);
-    digitalWrite(azul, LOW);
-    digitalWrite(verde, HIGH);
+    analogWrite(rojo, 255);
+    analogWrite(azul, 0);
+    analogWrite(verde, 255);
   }else if(fC < 100 && fC >= 60){
-    digitalWrite(verde, HIGH);
-    digitalWrite(azul, LOW);
-    digitalWrite(rojo, LOW);
+    analogWrite(verde, 255);
+    analogWrite(azul, 0);
+    analogWrite(rojo, 0);
   }else if(fC < 150 && fC >= 100){
-    digitalWrite(rojo, HIGH);
-    digitalWrite(azul, LOW);
-    digitalWrite(verde, LOW);
+    analogWrite(rojo, 255);
+    analogWrite(azul, 0);
+    analogWrite(verde, 0);
   }else{
     delay(100);
-    digitalWrite(rojo, LOW);
+    analogWrite(rojo, 0);
     delay(100);
-    digitalWrite(rojo, HIGH);
-    digitalWrite(azul, LOW);
-    digitalWrite(verde, LOW);
+    analogWrite(rojo, 255);
+    analogWrite(azul, 0);
+    analogWrite(verde, 0);
   }
 }
 
 //Modo 2: Monitor de temperatura corporal 
 
+  
+  
+  
+  
