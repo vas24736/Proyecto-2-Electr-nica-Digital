@@ -80,6 +80,7 @@ void loop()
   	case 0:
     	
     	mostrarCero();
+      digitalWrite(Buzzer, LOW);
     	servo_9.write(0);
     	digitalWrite(rojo, 0);
     	digitalWrite(azul, 0);
@@ -87,6 +88,7 @@ void loop()
     	break;
   	case 1:
     	mostrarUno();
+      digitalWrite(Buzzer, LOW);
     	servo_9.write(angulo);
     	fc = map(pot, 0, 1023, 0, 200);
     	frecuenciaC(fc);
